@@ -1,4 +1,6 @@
-import pygame as pg, sys
+import pygame as pg
+import sys
+import time
 from flock import Flock
 
 def main():
@@ -19,6 +21,7 @@ def main():
         flock.draw(pg, screen)
 
         pg.display.flip()
+        time.sleep(0.01) # 0.005 seems optimal
 
 
 if __name__ == '__main__':

@@ -8,7 +8,8 @@ class Flock:
             self.boids.append(self.Boid())
     
     def update(self):
-        pass
+        for boid in self.boids:
+            boid.update()
 
     def draw(self, pygame, surface):
         for boid in self.boids:
@@ -19,7 +20,14 @@ class Flock:
             self.fill_color = (255, 255, 255) # white
             self.boid_radius = 5
             self.vision_radius = 30 # TODO subject to change
-            self.center_pos = TwoVector(100, 100)
+
+            self.pos = TwoVector(0, 0)
+            self.velocity = TwoVector(1, 1)
+            self.accel = TwoVector() # warning: acceleration is VERY sensitive
+
+        def update(self):
+            self.pos.vec_add(self.velocity)
+            self.velocity.vec_add(self.accel)
         
         def draw(self, pygame, surface):
-            pygame.draw.circle(surface, self.fill_color, self.center_pos.to_tuple(), self.boid_radius)
+            pygame.draw.circle(surface, self.fill_color, self.pos.to_tuple(), self.boid_radius)
