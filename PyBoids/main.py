@@ -1,8 +1,11 @@
 import pygame as pg, sys
+from flock import Flock
 
 def main():
+    flock = Flock()
     pg.init()
-    window_size = 400, 500 # width, height
+    # TODO see if there is a way to set screen size relative to display size
+    window_size = 400, 500 # width, height 
     screen = pg.display.set_mode(window_size, pg.RESIZABLE)
 
     while True:
