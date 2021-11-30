@@ -2,10 +2,11 @@ import pygame as pg, sys
 from flock import Flock
 
 def main():
-    flock = Flock()
+    background_color = (63, 63, 63) # rgb
+    flock = Flock(1)
     pg.init()
     # TODO see if there is a way to set screen size relative to display size
-    window_size = 400, 500 # width, height 
+    window_size = 1000, 600 # width, height 
     screen = pg.display.set_mode(window_size, pg.RESIZABLE)
 
     while True:
@@ -13,7 +14,10 @@ def main():
             if event.type == pg.QUIT: 
                 sys.exit()
         
-        screen.fill((0, 0, 0))
+        screen.fill(background_color)
+        flock.update()
+        flock.draw(pg, screen)
+
         pg.display.flip()
 
 
