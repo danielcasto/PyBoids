@@ -25,6 +25,17 @@ class TwoVector:
     def scal_div(self, scalar):
         self.x /= scalar
         self.y /= scalar
+
+    def add(self, item):
+        if type(item) == TwoVector:
+            self.vec_add(item)
+        else:
+            self.scal_add(item)
+    def mult(self, item):
+        if type(item) == TwoVector:
+            self.vec_mult(item)
+        else:
+            self.scal_mult(item)
     
     def norm(self):
         return (self.x**2 + self.y**2)**0.5
