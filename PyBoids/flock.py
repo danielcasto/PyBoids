@@ -10,34 +10,30 @@ class Flock:
     
     def update(self):
         for primary_boid in self.boids:
-            sum_vec = TwoVector()
+            vel_sum_vec = TwoVector()
+            pos_sum_vec = TwoVector()
             steering_force = TwoVector()
             total_boids = 0 # In radius
 
             for secondary_boid in self.boids:
                 # Separation
                 # Alignment
+                secondary_vel = secondary_boid.velocity
+                # Cohesion
                 primary_pos = primary_boid.pos
                 secondary_pos = secondary_boid.pos
-                from_prim_to_sec = TwoVector(secondary_pos.x-primary_pos.x, secondary_pos.y-primary_pos.y)
+                from_prim_to_sec_pos = TwoVector(secondary_pos.x-primary_pos.x, secondary_pos.y-primary_pos.y)
 
-                if from_prim_to_sec.norm() < self.Boid.BOID_RADIUS:
-                    sum_vec.add(secondary_pos)
+                if from_prim_to_sec_pos.norm() < self.Boid.BOID_RADIUS:
+                    vel_sum_vec.add(secondary_vel)
+                    pos_sum_vec.add(secondary_pos)
                     total_boids += 1
-                # Cohesion
             
-            avg_pos = sum_vec
+            avg_vel = vel_sum_vec
+            avg_vel.mult(1/total_boids)
+            avg_pos = pos_sum_vec
             avg_pos.mult(1/total_boids)
-            steering_force.add(TwoVector(0.1 if avg_pos.x >= 0 else -0.1, 0.1 if avg_pos.y >= 0 else -0.1))
-
-            # TODO many issues here
-            if primary_boid.velocity.norm() < self.Boid.MAX_VELOCITY.norm():
-                primary_boid.accel.add(steering_force)
-            else:
-                if steering_force.norm() != 0:
-                    primary_boid.accel.add(TwoVector(-steering_force.x, -steering_force.y))
-                else:
-                    primary_boid.accel.add(TwoVector(-primary_boid.accel.x, -primary_boid.accel.y))
+            # TODO factor in some influence on acceleration
 
             primary_boid.update()
 
