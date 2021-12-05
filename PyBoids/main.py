@@ -8,7 +8,7 @@ def main():
     pg.init()
     # TODO see if there is a way to set screen size relative to display size
     window_size = (1500, 900) # width, height 
-    flock = Flock(window_size, 100)
+    flock = Flock(window_size, 200)
     screen = pg.display.set_mode(window_size, pg.RESIZABLE)
 
     while True:
@@ -21,7 +21,7 @@ def main():
         flock.draw(pg, screen)
 
         pg.display.flip()
-        time.sleep(0.1) # 0.005 seems optimal
+        time.sleep(0.01) # 0.005 seems optimal
 
 
 if __name__ == '__main__':
