@@ -45,7 +45,7 @@ class Flock:
                     vel_sum_vec.add(secondary_vel)
                     # Cohesion
                     pos_sum_vec.add(secondary_pos)
-                    # Separation
+                    # Separation TODO it doesn't seem like there is enough force from this
                     if from_sec_to_prim_pos.norm() != 0:
                         temp_vec = copy.deepcopy(from_sec_to_prim_pos)
                         temp_vec.mult(1/temp_vec.norm())
@@ -54,8 +54,10 @@ class Flock:
             
             avg_vel = copy.deepcopy(vel_sum_vec) 
             avg_vel.mult(1/total_boids)
+
             avg_pos = copy.deepcopy(pos_sum_vec) 
             avg_pos.mult(1/total_boids)
+
             avg_opposing = copy.deepcopy(opposing_vec_sum)
             avg_opposing.mult(1/total_boids)
      
@@ -86,14 +88,14 @@ class Flock:
             self.accel = TwoVector() # warning: acceleration is VERY sensitive
 
         def update(self):
-            self.pos.add(self.velocity)
-            self.velocity.add(self.accel) # TODO update pos, velocity, and acceleration in flock's update function
-
             if self.velocity.norm() > self.MAX_SPEED:
                 self.velocity.mult((1/self.velocity.norm())*self.MAX_SPEED)
 
             if self.accel.norm() > self.MAX_ACCEL_NORM:
                 self.accel.mult((1/self.accel.norm())*self.MAX_ACCEL_NORM)
+            
+            self.pos.add(self.velocity)
+            self.velocity.add(self.accel)
 
         def draw(self, pygame, surface):
             pygame.draw.circle(surface, self.FILL_COLOR, self.pos.to_tuple(), self.BOID_RADIUS)
