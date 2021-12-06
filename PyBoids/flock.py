@@ -7,19 +7,20 @@ class Flock:
         self.flocking_area_size = window_size
         for i in range(size):
             self.boids.append(self.Boid(random.randint(1, window_size[0]-1), random.randint(1, window_size[1]-1)))
-
+        
     def _boid_pos_correction(self, boid):
+        THRESHOLD = 0
         # corrects the position of the boid if out of bounds
 
-        if boid.pos.x >= self.flocking_area_size[0]:
-            boid.pos.x -= self.flocking_area_size[0]
-        elif boid.pos.x <= 0:
-            boid.pos.x += self.flocking_area_size[0]
+        if boid.pos.x >= self.flocking_area_size[0] - THRESHOLD:
+            boid.pos.x -= self.flocking_area_size[0] - THRESHOLD
+        elif boid.pos.x <= THRESHOLD:
+            boid.pos.x += self.flocking_area_size[0] + THRESHOLD 
         
-        if boid.pos.y >= self.flocking_area_size[0]:
-            boid.pos.y -= self.flocking_area_size[0]
-        elif boid.pos.y <= 0:
-            boid.pos.y += self.flocking_area_size[0]
+        if boid.pos.y >= self.flocking_area_size[0] - THRESHOLD:
+            boid.pos.y -= self.flocking_area_size[0] - THRESHOLD
+        elif boid.pos.y <= THRESHOLD:
+            boid.pos.y += self.flocking_area_size[0] + THRESHOLD
         
     
     def update(self):
@@ -37,20 +38,20 @@ class Flock:
                 secondary_pos = secondary_boid.pos
                 from_prim_to_sec_pos = TwoVector(secondary_pos.x-primary_pos.x, secondary_pos.y-primary_pos.y)
 
-                if from_prim_to_sec_pos.norm() < self.Boid.BOID_RADIUS:
+                if from_prim_to_sec_pos.norm() < self.Boid.VISION_RADIUS:
                     vel_sum_vec.add(secondary_vel)
                     pos_sum_vec.add(secondary_pos)
                     total_boids += 1
             
-            avg_vel = vel_sum_vec
+            avg_vel = vel_sum_vec # TODO deep copy this
             avg_vel.mult(1/total_boids)
             avg_pos = pos_sum_vec
             avg_pos.mult(1/total_boids)
 
             # TODO factor in some influence on acceleration
             net_force = TwoVector()
-            net_force.add(TwoVector(1 if avg_vel.x >= 0 else -1, 1 if avg_vel.x >= 0 else -1))
-            net_force.add(TwoVector(1 if avg_pos.x >= 0 else -1, 1 if avg_pos.x >= 0 else -1))            
+            net_force.add(TwoVector(1 if avg_vel.x >= 0 else -1, 1 if avg_vel.y >= 0 else -1))
+            net_force.add(TwoVector(1 if avg_pos.x >= 0 else -1, 1 if avg_pos.y >= 0 else -1))            
             self._boid_pos_correction(primary_boid)
             primary_boid.accel.add(net_force)
             primary_boid.update()
@@ -63,11 +64,11 @@ class Flock:
         FILL_COLOR = (255, 255, 255) # white
         BOID_RADIUS = 5
         VISION_RADIUS = 50 # TODO subject to change
-        MAX_SPEED = 10
+        MAX_SPEED = 7
 
         def __init__(self, pos_x=0, pos_y=0):
             self.pos = TwoVector(pos_x, pos_y)
-            self.velocity = TwoVector(random.randint(-1, 1), random.randint(-1,1))
+            self.velocity = TwoVector(random.randint(-10, 10), random.randint(-10,10))
             self.accel = TwoVector() # warning: acceleration is VERY sensitive
 
         def update(self):
@@ -75,7 +76,7 @@ class Flock:
             self.velocity.add(self.accel) # TODO update pos, velocity, and acceleration in flock's update function
 
             if self.velocity.norm() > self.MAX_SPEED:
-                self.velocity.mult(1/self.velocity.norm())
+                self.velocity.mult((1/self.velocity.norm())*self.MAX_SPEED)
 
         def draw(self, pygame, surface):
             pygame.draw.circle(surface, self.FILL_COLOR, self.pos.to_tuple(), self.BOID_RADIUS)
