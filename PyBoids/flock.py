@@ -1,5 +1,6 @@
 from vector import TwoVector
 import random
+import copy
 
 class Flock:
     def __init__(self, window_size, size=0):
@@ -25,39 +26,45 @@ class Flock:
     
     def update(self):
         for primary_boid in self.boids:
+            net_force = TwoVector()
             vel_sum_vec = TwoVector()
             pos_sum_vec = TwoVector()
+            opposing_vec_sum = TwoVector()
             total_boids = 0 # In radius
 
             for secondary_boid in self.boids:
-                net_force = TwoVector()
                 secondary_vel = secondary_boid.velocity           
                 primary_pos = primary_boid.pos
                 secondary_pos = secondary_boid.pos
-                from_prim_to_sec_pos = TwoVector(secondary_pos.x-primary_pos.x, secondary_pos.y-primary_pos.y)
+                from_sec_to_prim_pos = TwoVector(primary_pos.x-secondary_pos.x, primary_pos.y-secondary_pos.y)
 
-                if from_prim_to_sec_pos.norm() < self.Boid.VISION_RADIUS:
+                if from_sec_to_prim_pos.norm() < self.Boid.VISION_RADIUS:
                     total_boids += 1
-                    # Separation
-                    #net_force.mult(1/from_prim_to_sec_pos.norm())
+                    temp_vec = TwoVector()
                     # Alignment
                     vel_sum_vec.add(secondary_vel)
                     # Cohesion
                     pos_sum_vec.add(secondary_pos)
-                    
-            
-            avg_vel = vel_sum_vec # TODO deep copy this
-            avg_vel.mult(1/total_boids)
-            avg_pos = pos_sum_vec # TODO deep copy this
-            avg_pos.mult(1/total_boids)
+                    # Separation
+                    if from_sec_to_prim_pos.norm() != 0:
+                        temp_vec = copy.deepcopy(from_sec_to_prim_pos)
+                        temp_vec.mult(1/temp_vec.norm())
+                        opposing_vec_sum.add(temp_vec)
 
-            # TODO The acceleration probably has no influence once the max speed is reached
-            #net_force.add(TwoVector(1 if avg_vel.x >= 0 else -1, 1 if avg_vel.y >= 0 else -1))
-            #net_force.add(TwoVector(1 if avg_pos.x >= 0 else -1, 1 if avg_pos.y >= 0 else -1))       
+            
+            avg_vel = copy.deepcopy(vel_sum_vec) 
+            avg_vel.mult(1/total_boids)
+            avg_pos = copy.deepcopy(pos_sum_vec) 
+            avg_pos.mult(1/total_boids)
+            avg_opposing = copy.deepcopy(opposing_vec_sum)
+            avg_opposing.mult(1/total_boids)
+     
             net_force.add(avg_vel)
             net_force.sub(primary_boid.velocity)
             net_force.add(avg_pos)
             net_force.sub(primary_boid.pos)     
+            net_force.add(avg_opposing)
+
             self._boid_pos_correction(primary_boid)
             primary_boid.accel.add(net_force)
             primary_boid.update()
