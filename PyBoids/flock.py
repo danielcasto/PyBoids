@@ -51,15 +51,23 @@ class Flock:
                         temp_vec.mult(1/temp_vec.norm())
                         opposing_vec_sum.add(temp_vec)
 
-            
+            '''The best combination of factors I've seen so far is 1 for alignment, 1 for cohesion, and 40 for separation.
+            Also, from what I've seen 45 is best for VISION_RADIUS'''
+
+            # Alignment
             avg_vel = copy.deepcopy(vel_sum_vec) 
             avg_vel.mult(1/total_boids)
+            avg_vel.mult(1) # Alignment Factor TODO too sensitive
 
+            #Cohesion
             avg_pos = copy.deepcopy(pos_sum_vec) 
-            avg_pos.mult(1/total_boids)
+            avg_pos.mult(1/total_boids) 
+            avg_pos.mult(1) # Cohesion Factor TODO too sensitive
 
+            #Separation
             avg_opposing = copy.deepcopy(opposing_vec_sum)
             avg_opposing.mult(1/total_boids)
+            avg_opposing.mult(40) # Separation Factor TODO not sensitive enough
      
             net_force.add(avg_vel)
             net_force.sub(primary_boid.velocity)
@@ -78,7 +86,7 @@ class Flock:
     class Boid:
         FILL_COLOR = (255, 255, 255) # white
         BOID_RADIUS = 5
-        VISION_RADIUS = 50 # TODO subject to change
+        VISION_RADIUS = 45
         MAX_SPEED = 10
         MAX_ACCEL_NORM = 5
 
