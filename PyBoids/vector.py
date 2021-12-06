@@ -13,6 +13,10 @@ class TwoVector:
     def vec_mult(self, vec):
         self.x *= vec.x
         self.y *= vec.y
+    
+    def vec_sub(self, vec):
+        self.x -= vec.x
+        self.y -= vec.y
 
     def scal_add(self, scalar):
         self.x += scalar
@@ -25,6 +29,10 @@ class TwoVector:
     def scal_div(self, scalar):
         self.x /= scalar
         self.y /= scalar
+    
+    def scal_sub(self, scalar):
+        self.x -= scalar
+        self.y -= scalar
 
     def add(self, item):
         if type(item) == TwoVector:
@@ -36,6 +44,12 @@ class TwoVector:
             self.vec_mult(item)
         else:
             self.scal_mult(item)
+
+    def sub(self, item):
+        if type(item) == TwoVector:
+            self.vec_sub(item)
+        else:
+            self.scal_sub
     
     def norm(self):
         return (self.x**2 + self.y**2)**0.5
