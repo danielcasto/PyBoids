@@ -67,7 +67,7 @@ class Flock:
             #Separation
             avg_opposing = copy.deepcopy(opposing_vec_sum)
             avg_opposing.mult(1/total_boids)
-            avg_opposing.mult(40) # Separation Factor TODO not sensitive enough
+            avg_opposing.mult(38) # Separation Factor TODO not sensitive enough
      
             net_force.add(avg_vel)
             net_force.sub(primary_boid.velocity)
